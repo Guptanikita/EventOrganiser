@@ -1,3 +1,4 @@
+require "utils/event_helper.rb"
 class EventsController < ApplicationController
   
     def index
@@ -10,12 +11,15 @@ class EventsController < ApplicationController
       event = Event.new(h)
       if event.save
         # send invites to user..
+        if params[:user_keys].nil?
+          params[:user_keys] = []
+        end
         EventHepler.generate_invites(event.event_key, params[:user_keys])
         render :json => event.to_json
       else
         #seems another object with same field is already present
         err_msg =  event.errors.full_messages
-        render :json => {'errors' => ["Event is already present.."]}.to_json, status: :bad_request
+        render :json => {'errors' => [ event.errors.full_messages]}.to_json, status: :bad_request
       end
     end
   
@@ -62,12 +66,15 @@ class EventsController < ApplicationController
   
     def get_create_update_params(event)
         h = {}
-        h[:title] = event[:tile]
+        h[:title] = event[:title]
         #TODO :: Timezone need to be handle..
         h[:from] = Time.use_zone("UTC") {Time.zone.parse(event[:from])}
-        h[:to] = Time.use_zone("UTC") {Time.zone.parse(event[:to])}
         h[:description] = event[:description]
-        h[:all_day] = event[:all_day]
+        h[:user_key] = event[:user_key]
+        h[:all_day] = event[:all_day] || false
+        if !event[:all_day]
+          h[:to] = Time.use_zone("UTC") {Time.zone.parse(event[:to])}
+        end
         h
     end
   

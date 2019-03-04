@@ -1,3 +1,4 @@
+require "utils/key_helper.rb"
 class Event
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -11,13 +12,14 @@ class Event
   field :status, type: String # Status of event, Cancelled, Posponed, Preponed, Finished
   
 
-  belongs_to :user, foreign_key: 'user_key'
+  belongs_to :user, foreign_key: 'user_key', optional: true
 
   validates :from, presence: true
   validates :to, presence: true
-  validates :user, presence: true
 
   index({ user_key: 1, from: -1, to: -1}, background: true)
+
+  before_save :before_save_method
 
   def initialize(args={})
     super
@@ -39,6 +41,14 @@ class Event
     return false 
   end
   
+  def before_save_method
+    if self.to < Time.now.utc
+      self.status = "FINISED"
+    end
+    self.status = "SCHEDULED"
+  end
+
+
   def as_json(options={})
   	h = {
   	   'title' => self.title,

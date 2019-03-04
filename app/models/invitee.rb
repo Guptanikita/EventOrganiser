@@ -1,7 +1,7 @@
 class Invitee
     include Mongoid::Document
   
-    field :reponse, type: String #TODO:: make it enum..
+    field :response, type: String #TODO:: make it enum..
     field :comment, type: String
   
     belongs_to :event, foreign_key: 'event_key'
@@ -9,7 +9,7 @@ class Invitee
   
     validates :event, presence: true
     validates :user, presence: true
-    validates :reponse, presence: true
+    validates :response, presence: true
   
     before_save :before_save_method
 
@@ -25,7 +25,7 @@ class Invitee
             overlapping_event_keys = Event.where(:from.lte => from, :to.gte => to).pluck(:event_key)
             invitee = Invitee.where(:event_key.in => overlapping_event_keys, :user_key => self.user_key, :response => "YES").count
             if count > 0
-                self.reponse = "NO"
+                self.response = "no"
             end
         end
     end
@@ -36,7 +36,8 @@ class Invitee
         'from' => self.from,
         'to' => self.to,
         'description' => self.description,
-        "all_day" => self.all_day
+        "all_day" => self.all_day,
+        "response" => self.response
         }
         return h
     end

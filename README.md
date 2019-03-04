@@ -3,22 +3,22 @@
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
-Things you may want to cover:
+1. For running the app 
+    start mongo server #as db is mongodb
+    bundle install #for installing all dependencies
+    rails s #start the server
 
-* Ruby version
+2. Database Design
 
-* System dependencies
+    There are three models :
+        User : for user's metadata which has username, email and phone number.
 
-* Configuration
+        Event : for storing event data which has title, from , to , description , user_key(which is organiser of an event), all_day (flag which decides the event is for all_day or not), status of an event.
 
-* Database creation
+        Invitee : for storing invitees information which has event_key, user_key and response of that user(rsvp)
 
-* Database initialization
+3. Scripts for creating users and events
+    rake load_config:load_users  #for users creation
+    rake load_config:load_events #for events creation
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+4. API Summary
